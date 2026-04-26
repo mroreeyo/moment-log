@@ -30,7 +30,7 @@ export interface SlotSummary {
   readonly promptId: string;
   readonly slotStartsAt: string;
   readonly status: 'open' | 'closed';
-  readonly outcome: VlogState extends { outcome: infer O } ? O : never;
+  readonly outcome: Extract<VlogState, { readonly outcome: unknown }>['outcome'];
   readonly userFacingStatus: UserFacingSlotStatus;
   readonly expired: boolean;
   readonly clipCount: number;
@@ -48,7 +48,7 @@ export interface GetGroupSlotsResponse {
 export interface SlotUrlsClipEntry {
   readonly userId: string;
   readonly displayName: string;
-  readonly clipUrl: string;
+  readonly clipUrl: string | null;
 }
 
 export interface GetSlotUrlsResponse {

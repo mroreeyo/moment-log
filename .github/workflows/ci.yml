@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: Typecheck (all workspaces)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Run pnpm typecheck
+        run: pnpm typecheck
+
+  test:
+    name: Test (@momentlog/domain coverage gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Run domain tests with 100 percent coverage gate
+        run: pnpm --filter @momentlog/domain test:coverage
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: domain-coverage
+          path: packages/domain/coverage/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  format:
+    name: Format (prettier --check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Run prettier check
+        run: pnpm format:check
+
+  no-private-docs:
+    name: Guard private docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fail if private docs appear in tracked files
+        run: |
+          set -euo pipefail
+          forbidden='^(PRD\.md|ARCHITECTURE\.md|CODING_STANDARDS\.md|docs/style/|docs/adr/|\.sisyphus/)'
+          if git ls-files | grep -E "$forbidden" > offenders.txt; then
+            echo "::error title=Private docs leaked::다음 경로는 공개 저장소에 포함될 수 없습니다."
+            cat offenders.txt
+            exit 1
+          fi
+          echo "SAFE — no private docs are tracked."
+
+  lockfile:
+    name: Lockfile integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm (install skipped)
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          install: 'false'
+
+      - name: Verify pnpm-lock.yaml is in sync with package.json
+        run: pnpm install --frozen-lockfile --ignore-scripts

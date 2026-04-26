@@ -1,0 +1,36 @@
+name: Setup Node and pnpm
+description: Node.js와 pnpm을 설치하고 workspace 의존성을 캐시·설치합니다.
+
+inputs:
+  node-version:
+    description: Node.js 버전. 기본값은 package.json의 engines 와 맞춥니다.
+    required: false
+    default: '20.19.0'
+  pnpm-version:
+    description: pnpm 버전. 기본값은 루트 package.json의 packageManager 필드와 맞춥니다.
+    required: false
+    default: '9.12.0'
+  install:
+    description: 의존성을 설치할지 여부 ('true' / 'false').
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+        run_install: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+
+    - name: Install dependencies
+      if: ${{ inputs.install == 'true' }}
+      shell: bash
+      run: pnpm install --frozen-lockfile

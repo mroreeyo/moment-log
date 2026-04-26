@@ -58,6 +58,7 @@ supabase/.branches
 supabase/.temp
 
 # Private planning & internal docs — never pushed to public remote
+AGENTS.md
 PRD.md
 ARCHITECTURE.md
 CODING_STANDARDS.md
@@ -70,3 +71,7 @@ docs/adr/
 
 # Deno
 .deno/
+
+# Local operator/runtime files — never pushed to public remote
+.omx/
+.codex/

@@ -8,6 +8,8 @@ export default tsEslint.config(
       '**/dist/**',
       '**/coverage/**',
       '**/.expo/**',
+      '**/.omx/**',
+      '**/.codex/**',
       '**/build/**',
       '.husky/_/**',
       '.sisyphus/**',

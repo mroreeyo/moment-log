@@ -14,7 +14,7 @@
     "test:domain": "pnpm --filter @momentlog/domain test",
     "test:worker": "pnpm --filter @momentlog/worker test",
     "test:mobile": "pnpm --filter @momentlog/mobile test",
-    "test:edge": "cd supabase/functions && deno test --allow-all",
+    "test:edge": "cd supabase/functions && deno test --allow-all --sloppy-imports",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "pnpm -r typecheck",

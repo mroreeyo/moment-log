@@ -12,3 +12,12 @@ export type {
   UploadRequestValid,
   UploadRequestValidation,
 } from './upload-validation.js';
+
+export { validateFinalizeBody, finalizeSlotDecision } from './finalize-validation.js';
+export type {
+  FinalizeBodyInput,
+  FinalizeBodyValidation,
+  FinalizePromptSnapshot,
+  FinalizeSlotDecisionInput,
+  FinalizeSlotDecision,
+} from './finalize-validation.js';

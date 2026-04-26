@@ -25,9 +25,14 @@ const E = {
 describe('vlog state machine — PRD §8.5.1', () => {
   describe('initial close transitions (from hourly tick)', () => {
     test.each<{ name: string; from: VlogState; event: VlogEvent; to: VlogState }>([
-      { name: '0 uploads → empty',   from: S.pending, event: E.closeEmpty,  to: S.emptyClosed },
-      { name: '1 upload  → single',  from: S.pending, event: E.closeSingle, to: S.singleRaw },
-      { name: '2+ uploads stay pending (worker will pick up)', from: S.pending, event: E.closeMulti, to: S.pending },
+      { name: '0 uploads → empty', from: S.pending, event: E.closeEmpty, to: S.emptyClosed },
+      { name: '1 upload  → single', from: S.pending, event: E.closeSingle, to: S.singleRaw },
+      {
+        name: '2+ uploads stay pending (worker will pick up)',
+        from: S.pending,
+        event: E.closeMulti,
+        to: S.pending,
+      },
     ])('$name', ({ from, event, to }) => {
       expect(transition(from, event)).toEqual(to);
     });
@@ -35,9 +40,24 @@ describe('vlog state machine — PRD §8.5.1', () => {
 
   describe('worker transitions', () => {
     test.each<{ name: string; from: VlogState; event: VlogEvent; to: VlogState }>([
-      { name: 'pending → processing on WORKER_START',    from: S.pending,    event: E.workerStart, to: S.processing },
-      { name: 'processing → compiled on WORKER_DONE',    from: S.processing, event: E.workerDone,  to: S.compiled },
-      { name: 'processing → failed on WORKER_FAIL',      from: S.processing, event: E.workerFail,  to: S.failed },
+      {
+        name: 'pending → processing on WORKER_START',
+        from: S.pending,
+        event: E.workerStart,
+        to: S.processing,
+      },
+      {
+        name: 'processing → compiled on WORKER_DONE',
+        from: S.processing,
+        event: E.workerDone,
+        to: S.compiled,
+      },
+      {
+        name: 'processing → failed on WORKER_FAIL',
+        from: S.processing,
+        event: E.workerFail,
+        to: S.failed,
+      },
     ])('$name', ({ from, event, to }) => {
       expect(transition(from, event)).toEqual(to);
     });
@@ -60,9 +80,9 @@ describe('vlog state machine — PRD §8.5.1', () => {
   describe('terminal immutability', () => {
     test.each<{ state: VlogState; label: string }>([
       { state: S.emptyClosed, label: 'empty' },
-      { state: S.singleRaw,   label: 'skipped_single' },
-      { state: S.compiled,    label: 'compiled' },
-      { state: S.expired,     label: 'expired' },
+      { state: S.singleRaw, label: 'skipped_single' },
+      { state: S.compiled, label: 'compiled' },
+      { state: S.expired, label: 'expired' },
     ])('$label is terminal — any event returns same state', ({ state }) => {
       for (const event of Object.values(E)) {
         expect(transition(state, event)).toEqual(state);
@@ -72,10 +92,10 @@ describe('vlog state machine — PRD §8.5.1', () => {
 
   describe('illegal transitions are no-ops (not exceptions)', () => {
     test.each<{ name: string; from: VlogState; event: VlogEvent }>([
-      { name: 'pending cannot accept WORKER_DONE',      from: S.pending,    event: E.workerDone },
-      { name: 'processing cannot accept CLOSE_EMPTY',   from: S.processing, event: E.closeEmpty },
-      { name: 'processing cannot accept RETRY',         from: S.processing, event: E.retry },
-      { name: 'failed cannot accept WORKER_DONE',       from: S.failed,     event: E.workerDone },
+      { name: 'pending cannot accept WORKER_DONE', from: S.pending, event: E.workerDone },
+      { name: 'processing cannot accept CLOSE_EMPTY', from: S.processing, event: E.closeEmpty },
+      { name: 'processing cannot accept RETRY', from: S.processing, event: E.retry },
+      { name: 'failed cannot accept WORKER_DONE', from: S.failed, event: E.workerDone },
     ])('$name → state unchanged', ({ from, event }) => {
       expect(transition(from, event)).toEqual(from);
     });

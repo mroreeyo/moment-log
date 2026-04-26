@@ -15,14 +15,14 @@
 
 ## Tech Stack
 
-| Layer        | Choice                                               |
-| ------------ | ---------------------------------------------------- |
-| Mobile       | React Native + Expo SDK 52 + Expo Router             |
-| Backend      | Supabase (Auth, Postgres, Storage, Realtime, Edge)   |
-| Scheduler    | Google Cloud Scheduler (hourly tick, OIDC-auth)      |
-| Worker       | Google Cloud Run Service (FFmpeg normalize + concat) |
-| Language     | TypeScript (strict), Deno runtime for Edge Functions |
-| Package mgr  | pnpm workspace (monorepo)                            |
+| Layer       | Choice                                               |
+| ----------- | ---------------------------------------------------- |
+| Mobile      | React Native + Expo SDK 52 + Expo Router             |
+| Backend     | Supabase (Auth, Postgres, Storage, Realtime, Edge)   |
+| Scheduler   | Google Cloud Scheduler (hourly tick, OIDC-auth)      |
+| Worker      | Google Cloud Run Service (FFmpeg normalize + concat) |
+| Language    | TypeScript (strict), Deno runtime for Edge Functions |
+| Package mgr | pnpm workspace (monorepo)                            |
 
 ## Repository Layout
 
@@ -90,14 +90,14 @@ pnpm typecheck
 
 ## Scripts
 
-| Command                                 | Description                             |
-| --------------------------------------- | --------------------------------------- |
-| `pnpm test`                             | Run tests in every workspace package    |
-| `pnpm test:domain`                      | Run only the shared domain tests        |
-| `pnpm --filter @momentlog/domain test:coverage` | Enforce the 100 % coverage gate |
-| `pnpm typecheck`                        | `tsc --noEmit` across all packages      |
-| `pnpm lint`                             | ESLint (to be configured in Wave 1)     |
-| `pnpm build`                            | Build every package                     |
+| Command                                         | Description                          |
+| ----------------------------------------------- | ------------------------------------ |
+| `pnpm test`                                     | Run tests in every workspace package |
+| `pnpm test:domain`                              | Run only the shared domain tests     |
+| `pnpm --filter @momentlog/domain test:coverage` | Enforce the 100 % coverage gate      |
+| `pnpm typecheck`                                | `tsc --noEmit` across all packages   |
+| `pnpm lint`                                     | ESLint (to be configured in Wave 1)  |
+| `pnpm build`                                    | Build every package                  |
 
 ## Status
 

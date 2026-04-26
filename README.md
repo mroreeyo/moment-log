@@ -1,5 +1,8 @@
 # moment-log
 
+[![CI](https://github.com/mroreeyo/moment-log/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mroreeyo/moment-log/actions/workflows/ci.yml)
+[![Commitlint](https://github.com/mroreeyo/moment-log/actions/workflows/commitlint.yml/badge.svg?branch=main)](https://github.com/mroreeyo/moment-log/actions/workflows/commitlint.yml)
+
 > A private shared video journaling app — small groups capture 3-second moments on the hour, and the server automatically stitches them into a joint micro-vlog.
 
 ## Concept

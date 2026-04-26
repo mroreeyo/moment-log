@@ -65,6 +65,20 @@ jobs:
       - name: Run prettier check
         run: pnpm format:check
 
+  lint:
+    name: Lint (eslint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Run eslint
+        run: pnpm lint
+
   no-private-docs:
     name: Guard private docs
     runs-on: ubuntu-latest

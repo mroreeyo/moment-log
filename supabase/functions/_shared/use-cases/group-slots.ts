@@ -9,6 +9,9 @@ export interface GroupSlotsQueryInput {
 export interface GroupSlotsPrompt {
   readonly id: string;
   readonly slotStartsAt: string;
+  readonly slotEndsAt: string;
+  readonly graceEndsAt: string;
+  readonly expectedCount: number;
   readonly status: 'open' | 'closed';
 }
 
@@ -98,11 +101,14 @@ export const listGroupSlots = async (
       return {
         promptId: prompt.id,
         slotStartsAt: prompt.slotStartsAt,
+        slotEndsAt: prompt.slotEndsAt,
+        graceEndsAt: prompt.graceEndsAt,
         status: prompt.status,
         outcome: expired ? 'expired' : (vlog?.outcome ?? 'empty'),
         userFacingStatus: userFacingStatus(vlog, rawExists, expired),
         expired,
         clipCount: promptClips.length,
+        expectedCount: prompt.expectedCount,
         myClipExists: promptClips.some((clip) => clip.userId === input.userId),
         vlogUrl: null,
         clips: [],

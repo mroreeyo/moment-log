@@ -29,11 +29,14 @@ export interface PostClipsResponse {
 export interface SlotSummary {
   readonly promptId: string;
   readonly slotStartsAt: string;
+  readonly slotEndsAt: string;
+  readonly graceEndsAt: string;
   readonly status: 'open' | 'closed';
   readonly outcome: Extract<VlogState, { readonly outcome: unknown }>['outcome'];
   readonly userFacingStatus: UserFacingSlotStatus;
   readonly expired: boolean;
   readonly clipCount: number;
+  readonly expectedCount: number;
   readonly myClipExists: boolean;
   readonly vlogUrl: string | null;
   readonly clips: readonly never[];

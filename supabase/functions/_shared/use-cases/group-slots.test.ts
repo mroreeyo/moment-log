@@ -31,11 +31,14 @@ Deno.test('listGroupSlots: lists local-date slots without signed URLs', async ()
   assertEquals(result.slots[0], {
     promptId: 'p-local',
     slotStartsAt: '2026-04-26T15:00:00.000Z',
+    slotEndsAt: '2026-04-26T16:00:00.000Z',
+    graceEndsAt: '2026-04-26T16:15:00.000Z',
     status: 'closed',
     outcome: 'compiled',
     userFacingStatus: 'compiled',
     expired: false,
     clipCount: 2,
+    expectedCount: 1,
     myClipExists: true,
     vlogUrl: null,
     clips: [],
@@ -122,6 +125,9 @@ const deps = (repo: GroupSlotsRepository) => ({
 const prompt = (overrides: Partial<GroupSlotsPrompt> = {}): GroupSlotsPrompt => ({
   id: 'p1',
   slotStartsAt: '2026-04-26T15:00:00.000Z',
+  slotEndsAt: '2026-04-26T16:00:00.000Z',
+  graceEndsAt: '2026-04-26T16:15:00.000Z',
+  expectedCount: 1,
   status: 'closed',
   ...overrides,
 });

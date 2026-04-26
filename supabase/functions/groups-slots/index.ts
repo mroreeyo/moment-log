@@ -104,7 +104,7 @@ class SupabaseGroupSlotsRepository implements GroupSlotsRepository {
   }): Promise<readonly GroupSlotsPrompt[]> {
     const { data, error } = await this.client
       .from('prompts')
-      .select('id, slot_starts_at, status')
+      .select('id, slot_starts_at, slot_ends_at, grace_ends_at, expected_count, status')
       .eq('group_id', input.groupId)
       .gte('slot_starts_at', input.windowStart)
       .lt('slot_starts_at', input.windowEnd)
@@ -116,6 +116,9 @@ class SupabaseGroupSlotsRepository implements GroupSlotsRepository {
       return {
         id: requireString(row, 'id'),
         slotStartsAt: requireString(row, 'slot_starts_at'),
+        slotEndsAt: requireString(row, 'slot_ends_at'),
+        graceEndsAt: requireString(row, 'grace_ends_at'),
+        expectedCount: requireNumber(row, 'expected_count'),
         status: status === 'closed' ? 'closed' : 'open',
       };
     });
@@ -196,6 +199,12 @@ const toVlogOutcome = (value: string): GroupSlotsVlog['outcome'] => {
 const requireString = (row: Readonly<Record<string, unknown>>, key: string): string => {
   const value = row[key];
   if (typeof value !== 'string' || value.length === 0) throw new Error(`invalid ${key}`);
+  return value;
+};
+
+const requireNumber = (row: Readonly<Record<string, unknown>>, key: string): number => {
+  const value = row[key];
+  if (typeof value !== 'number' || !Number.isFinite(value)) throw new Error(`invalid ${key}`);
   return value;
 };
 

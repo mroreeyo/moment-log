@@ -14,12 +14,8 @@ export const isErr = <T, E>(
   result: Result<T, E>,
 ): result is { readonly ok: false; readonly error: E } => !result.ok;
 
-export const mapResult = <T, U, E>(
-  result: Result<T, E>,
-  fn: (value: T) => U,
-): Result<U, E> => (result.ok ? ok(fn(result.value)) : result);
+export const mapResult = <T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> =>
+  result.ok ? ok(fn(result.value)) : result;
 
-export const mapResultErr = <T, E, F>(
-  result: Result<T, E>,
-  fn: (error: E) => F,
-): Result<T, F> => (result.ok ? result : err(fn(result.error)));
+export const mapResultErr = <T, E, F>(result: Result<T, E>, fn: (error: E) => F): Result<T, F> =>
+  result.ok ? result : err(fn(result.error));

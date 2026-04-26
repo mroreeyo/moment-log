@@ -1,0 +1,27 @@
+{
+  "name": "momentlog",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MomentLog — private shared video journaling app (2-4 person groups, hourly 3s clips, auto-compiled vlogs)",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.11.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:domain": "pnpm --filter @momentlog/domain test",
+    "test:worker": "pnpm --filter @momentlog/worker test",
+    "test:mobile": "pnpm --filter @momentlog/mobile test",
+    "test:edge": "cd supabase/functions && deno test --allow-all",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.5.0",
+    "prettier": "^3.3.0"
+  }
+}

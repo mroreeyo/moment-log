@@ -1,27 +1,27 @@
-name: Question / Discussion
-description: Architectural question or decision worth capturing.
+name: 질문 / 논의
+description: 아키텍처·설계 관련 기록이 필요한 질문
 title: '[question] '
 labels: ['question']
 body:
   - type: textarea
     id: context
     attributes:
-      label: Context
-      description: What prompted the question?
+      label: 배경
+      description: 왜 이 질문이 생겼는지
     validations:
       required: true
 
   - type: textarea
     id: question
     attributes:
-      label: The question
+      label: 질문
     validations:
       required: true
 
   - type: textarea
     id: options
     attributes:
-      label: Options considered
+      label: 고려한 선택지
       placeholder: |
-        1. Option A — pros / cons
-        2. Option B — pros / cons
+        1. 안 A — 장점/단점
+        2. 안 B — 장점/단점

@@ -1,44 +1,44 @@
-name: Bug
-description: Something is broken.
+name: 버그 (Bug)
+description: 무언가 동작하지 않을 때
 title: '[bug] '
-labels: ['bug']
+labels: ['type:bug', 'bug']
 body:
   - type: textarea
     id: summary
     attributes:
-      label: Summary
-      description: One sentence description of the bug.
+      label: 요약
+      description: 한 문장 요약
     validations:
       required: true
 
   - type: textarea
     id: repro
     attributes:
-      label: Reproduction
-      description: Minimal steps to reproduce.
+      label: 재현 방법
+      description: 최소 재현 절차
       placeholder: |
-        1. Run `pnpm --filter @momentlog/domain test`
-        2. Observe failure in `vlog/state.test.ts`
+        1. `pnpm --filter @momentlog/domain test` 실행
+        2. `vlog/state.test.ts` 에서 실패 확인
     validations:
       required: true
 
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: 기대 동작
     validations:
       required: true
 
   - type: textarea
     id: actual
     attributes:
-      label: Actual behavior
+      label: 실제 동작
     validations:
       required: true
 
   - type: input
     id: env
     attributes:
-      label: Environment
-      description: Runtime, OS, pnpm/node/deno versions.
-      placeholder: 'macOS 14.4, Node 20.11, pnpm 9.12, iOS 18 simulator'
+      label: 환경
+      description: 런타임, OS, 버전
+      placeholder: 'macOS 14.4, Node 20.11, pnpm 9.12, iOS 18 시뮬레이터'

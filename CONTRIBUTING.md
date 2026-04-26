@@ -1,112 +1,121 @@
-# Contributing to moment-log
+# 기여 가이드
 
-This project follows **GitHub Flow**: `main` is always deployable, every change arrives through a short-lived branch and a pull request.
+이 저장소는 **GitHub Flow**를 따릅니다. `main`은 항상 배포 가능한 상태를 유지하고, 모든 변경은 짧은 수명의 피처 브랜치와 풀 리퀘스트를 통해 들어옵니다.
 
-## Branching
+## 언어 정책
 
-- `main` is protected. No direct pushes.
-- Work on **feature branches** named like:
-  - `feature/<short-slug>` — new capability
-  - `fix/<short-slug>` — bug fix
-  - `chore/<short-slug>` — tooling, deps, refactors
-  - `docs/<short-slug>` — documentation
-- Branch lifetime: **< 3 days** ideally. Rebase or re-cut if you drift.
-- One PR = one atomic change.
+- 모든 **커밋 메시지**, **PR 제목과 본문**, **이슈 제목과 본문**은 **한글 기반**으로 작성합니다.
+- **Conventional Commits의 `type`과 `scope`는 영문 그대로** 둡니다(`feat`, `fix`, `docs`, `camera`, `vlog-state` 등). 제목의 설명(subject)과 본문을 한글로 쓰세요.
+- 코드 내부의 식별자(함수·변수·파일명·테스트명)는 기존대로 **영문**입니다. 도메인 용어는 PRD의 영어 표기를 그대로 사용합니다(`slot`, `prompt`, `clip`, `vlog`, `grace window` 등).
+- 불가피하게 외부 인용이나 영어 감사 로그가 포함될 때는 그대로 두되, 해당 문단 앞뒤 맥락은 한글로 작성합니다.
 
-## Commits — Conventional Commits
+## 브랜치 전략
 
-Format:
+- `main` 은 보호되어 있습니다. 직접 푸시할 수 없습니다.
+- 작업은 수명이 짧은 **피처 브랜치**에서 진행합니다. 권장 네이밍:
+  - `feat/<slug>` — 새 기능
+  - `fix/<slug>` — 버그 수정
+  - `chore/<slug>` — 도구·의존성·설정 변경
+  - `docs/<slug>` — 문서 변경
+  - `refactor/<slug>` — 동작 보존 리팩토링
+  - `test/<slug>` — 테스트만
+- 브랜치 수명은 이상적으로 **3일 미만**. 그 이상 갈 것 같으면 main 최신을 다시 얹으세요(rebase).
+- **하나의 PR은 하나의 원자적 변경**을 다룹니다.
 
-```
-<type>(<scope>): <subject>
+## 커밋 — Conventional Commits (한글 본문)
 
-<body — optional, wrap at 120>
-
-<footer — optional; BREAKING CHANGE, Closes #, etc.>
-```
-
-Allowed `type`s:
-
-| type       | meaning                         |
-| ---------- | ------------------------------- |
-| `feat`     | new user-visible capability     |
-| `fix`      | bug fix                         |
-| `chore`    | tooling, deps, ignore files     |
-| `docs`     | docs only                       |
-| `refactor` | behavior-preserving code change |
-| `test`     | tests only                      |
-| `perf`     | perf improvement                |
-| `ci`       | CI config                       |
-| `build`    | build system / packaging        |
-| `style`    | formatting, whitespace          |
-| `revert`   | reverts a previous commit       |
-
-Rules enforced by `commitlint`:
-
-- Lowercase `type`.
-- `scope` is kebab-case (e.g. `camera`, `vlog-state`, `cron-hourly-tick`).
-- Subject ≤ 100 chars, no trailing period.
-- Body lines ≤ 120 chars.
-
-### Good examples
+형식:
 
 ```
-feat(camera): enforce 3-second recording limit
+<type>(<scope>): <한글 subject>
 
-fix(worker): prevent ffmpeg zombie processes on timeout
+<선택: 한글 본문, 한 줄 120자 이하>
 
-chore(deps): bump @supabase/supabase-js to 2.45.4
-
-docs(contributing): add squash-merge policy
-
-refactor(vlog-state): extract terminal-state helper
-
-test(domain): cover raw_expired edge case
+<선택: footer — BREAKING CHANGE, Closes #N 등>
 ```
 
-### Bad examples
+허용 `type`:
+
+| type       | 의미                       |
+| ---------- | -------------------------- |
+| `feat`     | 사용자에게 보이는 새 기능  |
+| `fix`      | 버그 수정                  |
+| `chore`    | 도구, 의존성, 무시 파일 등 |
+| `docs`     | 문서만                     |
+| `refactor` | 동작을 보존하는 코드 변경  |
+| `test`     | 테스트만                   |
+| `perf`     | 성능 개선                  |
+| `ci`       | CI 설정                    |
+| `build`    | 빌드 시스템·패키징         |
+| `style`    | 포매팅·공백                |
+| `revert`   | 이전 커밋 되돌리기         |
+
+`commitlint` 규칙:
+
+- `type` 은 소문자.
+- `scope` 는 kebab-case (예: `camera`, `vlog-state`, `cron-hourly-tick`).
+- 제목은 100자 이하, 마침표 금지.
+- 본문은 한 줄 120자 이하.
+
+### 좋은 예
 
 ```
-update stuff                 ← no type, vague
-Fix camera bug               ← uppercase, no scope
-feat: add a lot of things.   ← too broad, trailing period
-WIP                          ← not atomic
+feat(camera): 3초 촬영 제한 구현
+
+fix(worker): FFmpeg 타임아웃 시 좀비 프로세스 방지
+
+chore(deps): @supabase/supabase-js 2.45.4로 업그레이드
+
+docs(contributing): squash merge 정책 추가
+
+refactor(vlog-state): 종료 상태 헬퍼 함수로 분리
+
+test(domain): raw_expired 경계 케이스 커버리지 추가
 ```
 
-## Pull Requests
+### 나쁜 예
 
-1. Push your branch: `git push -u origin feature/<slug>`.
-2. Open a PR targeting `main`. Use the template.
-3. Self-review the diff before requesting review.
-4. Address review comments with **fixup commits**, not force-pushes (unless rebasing onto `main`).
-5. Once green and approved, **squash-merge** into `main`. The squash title must itself be a Conventional Commit.
+```
+update stuff                 ← type 없음, 모호
+Fix camera bug               ← 대문자 시작, scope 없음, 영문(한글 정책 위반)
+feat: 여러 가지를 한꺼번에 추가함.   ← 너무 광범위, 마침표
+WIP                          ← 원자적이지 않음
+```
 
-## Local git hooks (Husky)
+## 풀 리퀘스트
 
-The hooks run automatically after `pnpm install`:
+1. 브랜치를 푸시: `git push -u origin feat/<slug>`
+2. `main`을 대상으로 PR을 엽니다. 템플릿을 사용합니다.
+3. 리뷰 요청 전에 **셀프 리뷰**로 diff를 한 번 훑습니다.
+4. 리뷰 코멘트는 **fixup 커밋**으로 반영합니다(main 최신에 리베이스하는 경우가 아니면 force push 지양).
+5. CI가 초록이고 승인되면 **squash merge** 합니다. squash의 제목은 그 자체로 Conventional Commit이 되어야 합니다.
 
-| hook         | action                              |
-| ------------ | ----------------------------------- |
-| `pre-commit` | `lint-staged` formats touched files |
-| `commit-msg` | `commitlint` validates the message  |
-| `pre-push`   | runs `packages/domain` tests        |
+## 로컬 git 훅 (Husky)
 
-Bypass is strongly discouraged. If absolutely necessary: `git commit --no-verify`, then open a follow-up task.
+`pnpm install` 이후 다음 훅이 자동으로 동작합니다.
 
-## Merge strategy
+| 훅           | 동작                                              |
+| ------------ | ------------------------------------------------- |
+| `pre-commit` | `lint-staged`로 스테이지된 파일을 prettier 포매팅 |
+| `commit-msg` | `commitlint`로 커밋 메시지 검증                   |
+| `pre-push`   | `packages/domain` 테스트 실행                     |
 
-- **Squash merge** is the default. One PR becomes one commit on `main`.
-- The resulting commit message inherits the PR title, so PR titles must be Conventional Commits.
-- **Merge commits** and **rebase merges** are disabled at the branch-protection level.
+우회는 강력히 지양합니다. 정말 필요할 때만 `git commit --no-verify`를 쓰고, 이후 별도 이슈로 기록하세요.
 
-## Releases
+## 머지 전략
 
-- Tag format: `v<MAJOR>.<MINOR>.<PATCH>` (SemVer). Pre-releases: `v1.0.0-alpha.1`.
-- Released via GitHub Releases; details added as the project approaches its first deployable build.
+- 기본은 **squash merge** 입니다. PR 하나가 `main`의 커밋 하나가 됩니다.
+- squash 결과 커밋 메시지는 **PR 제목을 그대로** 받으므로, PR 제목은 반드시 Conventional Commit 형식이어야 합니다.
+- **merge commit** 과 **rebase merge** 는 브랜치 보호 설정에서 비활성화되어 있습니다.
 
-## Private content
+## 릴리즈
 
-These paths must never be committed — the repo's `.gitignore` enforces this:
+- 태그 형식: `v<MAJOR>.<MINOR>.<PATCH>` (SemVer). 프리릴리즈: `v1.0.0-alpha.1`.
+- GitHub Releases로 릴리즈 노트를 작성합니다. 첫 배포 빌드에 다가갈 때 상세화합니다.
+
+## 저장소에 올리지 않는 파일 (민감·내부 문서)
+
+`.gitignore` 로 자동 차단되어 있습니다. 실수로 add 하지 않도록 주의하세요.
 
 - `PRD.md`
 - `ARCHITECTURE.md`
@@ -115,14 +124,15 @@ These paths must never be committed — the repo's `.gitignore` enforces this:
 - `docs/adr/`
 - `.sisyphus/`
 
-If you need to share internal docs, do it outside the repo.
+내부 문서 공유가 필요하면 저장소 밖 채널을 이용합니다.
 
-## Checklist before opening a PR
+## PR 체크리스트 (열기 전 자가 확인)
 
-- [ ] Branch named `feature/`, `fix/`, `chore/`, or `docs/`.
-- [ ] Commits are Conventional Commits.
-- [ ] `pnpm typecheck` passes.
-- [ ] `pnpm test` passes for touched packages.
-- [ ] `packages/domain` coverage stays 100% when touched.
-- [ ] No forbidden files staged (`git diff --cached --name-only`).
-- [ ] PR description follows the template.
+- [ ] 브랜치 이름이 `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`, `test/` 로 시작.
+- [ ] 커밋 메시지가 Conventional Commits 형식.
+- [ ] 커밋/PR 메시지 본문이 **한글**로 작성됨 (`type`과 `scope`만 영문).
+- [ ] `pnpm typecheck` 통과.
+- [ ] 영향받는 패키지의 `pnpm test` 통과.
+- [ ] `packages/domain` 을 건드렸다면 커버리지가 여전히 100%.
+- [ ] `git diff --cached --name-only` 로 금지된 파일이 스테이징되지 않음을 확인.
+- [ ] PR 본문이 템플릿을 따름.

@@ -17,11 +17,27 @@
     "test:edge": "cd supabase/functions && deno test --allow-all",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "commitlint": "commitlint --edit",
+    "prepare": "husky",
     "clean": "pnpm -r clean && rm -rf node_modules"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@types/node": "^20.11.0",
-    "typescript": "^5.5.0",
-    "prettier": "^3.3.0"
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

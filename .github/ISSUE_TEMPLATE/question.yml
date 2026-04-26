@@ -1,0 +1,27 @@
+name: Question / Discussion
+description: Architectural question or decision worth capturing.
+title: '[question] '
+labels: ['question']
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What prompted the question?
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+    validations:
+      required: true
+
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered
+      placeholder: |
+        1. Option A — pros / cons
+        2. Option B — pros / cons

@@ -1,0 +1,40 @@
+name: Task
+description: A scoped unit of work (feature, chore, refactor).
+title: '[task] '
+labels: ['task']
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What needs to happen and why. One to three bullets.
+      placeholder: |
+        - Wire Apple Sign-In through Supabase Auth
+        - Required before Wave 3 upload flow
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Verifiable, binary outcomes.
+      placeholder: |
+        - [ ] User can sign in with Apple on iOS dev build
+        - [ ] `profiles` row is created on first sign-in
+        - [ ] Integration test passes against local Supabase
+    validations:
+      required: true
+
+  - type: input
+    id: wave
+    attributes:
+      label: Wave / Milestone
+      description: Which plan wave does this belong to?
+      placeholder: 'Wave 3'
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Links, references, constraints.

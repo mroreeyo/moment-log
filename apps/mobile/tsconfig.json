@@ -16,6 +16,6 @@
     },
     "types": ["jest"]
   },
-  "include": ["app/**/*", "src/**/*"],
+  "include": ["app/**/*", "components/**/*", "src/**/*"],
   "exclude": ["node_modules", ".expo", "dist"]
 }

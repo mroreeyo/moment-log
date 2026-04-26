@@ -19,26 +19,24 @@ export interface PostClipsUploadUrlResponse {
   readonly storagePath: string;
 }
 
-export interface PostClipsCreatedResponse {
+export interface PostClipsResponse {
   readonly clipId: string;
   readonly promptId: string;
-  readonly status: 'uploaded';
+  readonly storagePath: string;
+  readonly replaced: boolean;
 }
-
-export interface PostClipsUpsertedResponse extends PostClipsCreatedResponse {
-  readonly replaced: true;
-}
-
-export type PostClipsResponse = PostClipsCreatedResponse | PostClipsUpsertedResponse;
 
 export interface SlotSummary {
   readonly promptId: string;
   readonly slotStartsAt: string;
+  readonly slotEndsAt: string;
+  readonly graceEndsAt: string;
   readonly status: 'open' | 'closed';
-  readonly outcome: VlogState extends { outcome: infer O } ? O : never;
+  readonly outcome: Extract<VlogState, { readonly outcome: unknown }>['outcome'];
   readonly userFacingStatus: UserFacingSlotStatus;
   readonly expired: boolean;
   readonly clipCount: number;
+  readonly expectedCount: number;
   readonly myClipExists: boolean;
   readonly vlogUrl: string | null;
   readonly clips: readonly never[];
@@ -53,7 +51,7 @@ export interface GetGroupSlotsResponse {
 export interface SlotUrlsClipEntry {
   readonly userId: string;
   readonly displayName: string;
-  readonly clipUrl: string;
+  readonly clipUrl: string | null;
 }
 
 export interface GetSlotUrlsResponse {

@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { Api } from '@momentlog/domain/index.ts';
 import { SystemClock } from '../_shared/adapters/clock/system-clock.ts';
 import { ConsoleLogger } from '../_shared/adapters/logger/console-logger.ts';

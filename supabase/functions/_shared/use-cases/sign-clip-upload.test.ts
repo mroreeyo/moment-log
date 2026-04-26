@@ -1,4 +1,4 @@
-import { assertEquals } from 'jsr:@std/assert@1';
+import { assertEquals } from '@std/assert';
 import { signClipUpload } from './sign-clip-upload.ts';
 import type { MembershipReader, PromptLookupResult } from '../ports/driven/membership-reader.ts';
 import type { SignedUploadUrl, StorageSigner } from '../ports/driven/storage-signer.ts';

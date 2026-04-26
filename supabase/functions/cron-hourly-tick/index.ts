@@ -12,6 +12,7 @@ import {
   type WorkerDispatchInput,
   type WorkerDispatcher,
 } from '../_shared/use-cases/hourly-tick.ts';
+import { ExpoPushDispatcher } from './push.ts';
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -44,6 +45,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const result = await runHourlyTick({
       repo: new SupabaseHourlyTickRepository(client),
       worker: new HttpWorkerDispatcher(),
+      push: new ExpoPushDispatcher(),
       clock,
     });
     logger.info('cron-hourly-tick ok', { ...result });
@@ -109,10 +111,11 @@ class SupabaseHourlyTickRepository implements HourlyTickRepository {
   async listGroups(): Promise<readonly SchedulerGroup[]> {
     const { data, error } = await this.client
       .from('groups')
-      .select('id, timezone, active_hour_start, active_hour_end');
+      .select('id, name, timezone, active_hour_start, active_hour_end');
     if (error) throw new Error(`listGroups failed: ${error.message}`);
     return (data ?? []).map((row) => ({
       id: String(row.id),
+      name: String(row.name),
       timezone: String(row.timezone),
       activeHourStart: Number(row.active_hour_start),
       activeHourEnd: Number(row.active_hour_end),
@@ -134,7 +137,7 @@ class SupabaseHourlyTickRepository implements HourlyTickRepository {
     readonly slotEndsAt: string;
     readonly graceEndsAt: string;
     readonly expectedCount: number;
-  }): Promise<boolean> {
+  }): Promise<string | null> {
     const { data, error } = await this.client
       .from('prompts')
       .upsert(
@@ -149,7 +152,38 @@ class SupabaseHourlyTickRepository implements HourlyTickRepository {
       )
       .select('id');
     if (error) throw new Error(`createPromptIfMissing failed: ${error.message}`);
-    return (data ?? []).length > 0;
+    const inserted = data?.[0] as { readonly id?: unknown } | undefined;
+    return typeof inserted?.id === 'string' ? inserted.id : null;
+  }
+
+  async listPushTokens(groupId: string): Promise<readonly string[]> {
+    const now = new Date().toISOString();
+    const { data: members, error: membersError } = await this.client
+      .from('group_members')
+      .select('user_id, muted_until')
+      .eq('group_id', groupId);
+    if (membersError) throw new Error(`listPushTokens members failed: ${membersError.message}`);
+    const activeUserIds = (members ?? [])
+      .filter((row) => row.muted_until === null || String(row.muted_until) < now)
+      .map((row) => String(row.user_id));
+    if (activeUserIds.length === 0) return [];
+
+    const { data: tokens, error: tokensError } = await this.client
+      .from('push_tokens')
+      .select('expo_push_token')
+      .in('user_id', activeUserIds)
+      .is('invalidated_at', null);
+    if (tokensError) throw new Error(`listPushTokens tokens failed: ${tokensError.message}`);
+    return (tokens ?? []).map((row) => String(row.expo_push_token));
+  }
+
+  async invalidatePushTokens(tokens: readonly string[], invalidatedAt: string): Promise<void> {
+    if (tokens.length === 0) return;
+    const { error } = await this.client
+      .from('push_tokens')
+      .update({ invalidated_at: invalidatedAt })
+      .in('expo_push_token', [...tokens]);
+    if (error) throw new Error(`invalidatePushTokens failed: ${error.message}`);
   }
 
   async listClosablePrompts(now: string): Promise<readonly SchedulerPrompt[]> {

@@ -2,6 +2,7 @@ import type { Clock } from '../ports/driven/clock.ts';
 
 export interface SchedulerGroup {
   readonly id: string;
+  readonly name: string;
   readonly timezone: string;
   readonly activeHourStart: number;
   readonly activeHourEnd: number;
@@ -54,7 +55,12 @@ export interface HourlyTickRepository {
     readonly slotEndsAt: string;
     readonly graceEndsAt: string;
     readonly expectedCount: number;
-  }) => Promise<boolean>;
+  }) => Promise<string | null>;
+  readonly listPushTokens: (groupId: string) => Promise<readonly string[]>;
+  readonly invalidatePushTokens: (
+    tokens: readonly string[],
+    invalidatedAt: string,
+  ) => Promise<void>;
   readonly listClosablePrompts: (now: string) => Promise<readonly SchedulerPrompt[]>;
   readonly closePrompt: (promptId: string) => Promise<boolean>;
   readonly createVlogForClosedPrompt: (input: {
@@ -82,9 +88,27 @@ export interface WorkerDispatcher {
   readonly dispatchCompile: (input: WorkerDispatchInput) => Promise<boolean>;
 }
 
+export interface PushDispatchInput {
+  readonly groupId: string;
+  readonly promptId: string;
+  readonly groupName: string;
+  readonly tokens: readonly string[];
+}
+
+export interface PushDispatchResult {
+  readonly attempted: number;
+  readonly succeeded: number;
+  readonly permanentFailedTokens: readonly string[];
+}
+
+export interface PushDispatcher {
+  readonly dispatchPromptCreated: (input: PushDispatchInput) => Promise<PushDispatchResult>;
+}
+
 export interface HourlyTickDeps {
   readonly repo: HourlyTickRepository;
   readonly worker: WorkerDispatcher;
+  readonly push: PushDispatcher;
   readonly clock: Clock;
 }
 
@@ -111,14 +135,31 @@ export const runHourlyTick = async (deps: HourlyTickDeps): Promise<HourlyTickOut
     for (const group of groups) {
       if (!isActiveLocalHour(now, group)) continue;
       const expectedCount = await deps.repo.countMembers(group.id);
-      const created = await deps.repo.createPromptIfMissing({
+      const createdPromptId = await deps.repo.createPromptIfMissing({
         groupId: group.id,
         slotStartsAt: slotStartsAt.toISOString(),
         slotEndsAt: slotEndsAt.toISOString(),
         graceEndsAt: graceEndsAt.toISOString(),
         expectedCount,
       });
-      if (created) counters.promptsCreated += 1;
+      if (createdPromptId) {
+        counters.promptsCreated += 1;
+        const tokens = await deps.repo.listPushTokens(group.id);
+        if (tokens.length > 0) {
+          const pushResult = await deps.push.dispatchPromptCreated({
+            groupId: group.id,
+            promptId: createdPromptId,
+            groupName: group.name,
+            tokens,
+          });
+          counters.pushesAttempted += pushResult.attempted;
+          counters.pushesSucceeded += pushResult.succeeded;
+          await deps.repo.invalidatePushTokens(
+            pushResult.permanentFailedTokens,
+            deps.clock.now().toISOString(),
+          );
+        }
+      }
     }
 
     const closable = await deps.repo.listClosablePrompts(now.toISOString());

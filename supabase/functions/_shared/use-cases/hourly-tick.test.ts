@@ -6,6 +6,8 @@ import {
   type SchedulerGroup,
   type SchedulerMember,
   type SchedulerPrompt,
+  type PushDispatchInput,
+  type PushDispatchResult,
   type WorkerDispatchInput,
 } from './hourly-tick.ts';
 
@@ -66,6 +68,26 @@ Deno.test('runHourlyTick: mutes a member after the third consecutive miss', asyn
   ]);
 });
 
+Deno.test(
+  'runHourlyTick: sends prompt-created push only for active tokens and invalidates dead tokens',
+  async () => {
+    const repo = makeRepo({ groups: [group({ activeHourStart: 9, activeHourEnd: 22 })] });
+    const result = await runHourlyTick(deps(repo, '2026-04-27T00:00:00.000Z'));
+
+    assertEquals(result.pushesAttempted, 2);
+    assertEquals(result.pushesSucceeded, 1);
+    assertEquals(repo.pushed, [
+      {
+        groupId: 'g1',
+        promptId: 'prompt-1',
+        groupName: '우리 그룹',
+        tokens: ['ExponentPushToken[active]', 'ExponentPushToken[dead]'],
+      },
+    ]);
+    assertEquals(repo.invalidatedTokens, ['ExponentPushToken[dead]']);
+  },
+);
+
 Deno.test('nextLocalMidnightUtc handles group timezone', () => {
   assertEquals(
     nextLocalMidnightUtc(new Date('2026-04-27T13:00:00.000Z'), 'Asia/Seoul').toISOString(),
@@ -76,11 +98,13 @@ Deno.test('nextLocalMidnightUtc handles group timezone', () => {
 const deps = (repo: ReturnType<typeof makeRepo>, now: string) => ({
   repo,
   worker: { dispatchCompile: (input: WorkerDispatchInput) => repo.dispatch(input) },
+  push: { dispatchPromptCreated: (input: PushDispatchInput) => repo.dispatchPush(input) },
   clock: { now: () => new Date(now) },
 });
 
 const group = (overrides: Partial<SchedulerGroup> = {}): SchedulerGroup => ({
   id: 'g1',
+  name: '우리 그룹',
   timezone: 'Asia/Seoul',
   activeHourStart: 0,
   activeHourEnd: 23,
@@ -127,21 +151,37 @@ const makeRepo = (
       mutedUntil: string | null;
     }>,
     dispatched: [] as WorkerDispatchInput[],
+    pushed: [] as PushDispatchInput[],
+    invalidatedTokens: [] as string[],
     dispatch: (input: WorkerDispatchInput): Promise<boolean> => {
       repo.dispatched.push(input);
       return Promise.resolve(true);
+    },
+    dispatchPush: (input: PushDispatchInput): Promise<PushDispatchResult> => {
+      repo.pushed.push(input);
+      return Promise.resolve({
+        attempted: input.tokens.length,
+        succeeded: input.tokens.length - 1,
+        permanentFailedTokens: input.tokens.slice(-1),
+      });
     },
     createCronRun: (): Promise<string> => Promise.resolve('run-1'),
     completeCronRun: () => Promise.resolve(),
     failCronRun: () => Promise.resolve(),
     listGroups: (): Promise<readonly SchedulerGroup[]> => Promise.resolve(groups),
     countMembers: (): Promise<number> => Promise.resolve(input.members?.length ?? 1),
-    createPromptIfMissing: (created): Promise<boolean> => {
+    createPromptIfMissing: (created): Promise<string | null> => {
       const key = `${created.groupId}:${created.slotStartsAt}`;
-      if (promptKeys.has(key)) return Promise.resolve(false);
+      if (promptKeys.has(key)) return Promise.resolve(null);
       promptKeys.add(key);
       repo.promptsCreated.push(created);
-      return Promise.resolve(true);
+      return Promise.resolve(`prompt-${repo.promptsCreated.length}`);
+    },
+    listPushTokens: (): Promise<readonly string[]> =>
+      Promise.resolve(['ExponentPushToken[active]', 'ExponentPushToken[dead]']),
+    invalidatePushTokens: (tokens): Promise<void> => {
+      repo.invalidatedTokens.push(...tokens);
+      return Promise.resolve();
     },
     listClosablePrompts: (): Promise<readonly SchedulerPrompt[]> => Promise.resolve(prompts),
     closePrompt: (): Promise<boolean> => Promise.resolve(true),
@@ -169,7 +209,10 @@ const makeRepo = (
     vlogs: unknown[];
     memberUpdates: unknown[];
     dispatched: WorkerDispatchInput[];
+    pushed: PushDispatchInput[];
+    invalidatedTokens: string[];
     dispatch: (input: WorkerDispatchInput) => Promise<boolean>;
+    dispatchPush: (input: PushDispatchInput) => Promise<PushDispatchResult>;
   };
   return repo;
 };

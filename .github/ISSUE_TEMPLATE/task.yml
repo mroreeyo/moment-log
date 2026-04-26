@@ -1,40 +1,40 @@
-name: Task
-description: A scoped unit of work (feature, chore, refactor).
+name: 작업 (Task)
+description: 범위가 정의된 작업 단위 (기능, 잡일, 리팩토링)
 title: '[task] '
-labels: ['task']
+labels: ['type:task']
 body:
   - type: textarea
     id: objective
     attributes:
-      label: Objective
-      description: What needs to happen and why. One to three bullets.
+      label: 목적
+      description: 무엇을 왜 하는지, 1~3줄의 불릿으로 작성하세요.
       placeholder: |
-        - Wire Apple Sign-In through Supabase Auth
-        - Required before Wave 3 upload flow
+        - Apple 로그인을 Supabase Auth를 통해 연결
+        - Wave 3 업로드 플로우 전에 필요
     validations:
       required: true
 
   - type: textarea
     id: acceptance
     attributes:
-      label: Acceptance criteria
-      description: Verifiable, binary outcomes.
+      label: 완료 기준 (Acceptance)
+      description: 이진적(pass/fail)으로 검증 가능한 결과만 적습니다.
       placeholder: |
-        - [ ] User can sign in with Apple on iOS dev build
-        - [ ] `profiles` row is created on first sign-in
-        - [ ] Integration test passes against local Supabase
+        - [ ] iOS 개발 빌드에서 Apple 로그인 성공
+        - [ ] 최초 로그인 시 `profiles` row 생성 확인
+        - [ ] 로컬 Supabase 상대 통합 테스트 통과
     validations:
       required: true
 
   - type: input
     id: wave
     attributes:
-      label: Wave / Milestone
-      description: Which plan wave does this belong to?
+      label: Wave / 마일스톤
+      description: 플랜의 어느 Wave에 속하는지
       placeholder: 'Wave 3'
 
   - type: textarea
     id: notes
     attributes:
-      label: Notes
-      description: Links, references, constraints.
+      label: 참고
+      description: 링크, 참조, 제약 조건

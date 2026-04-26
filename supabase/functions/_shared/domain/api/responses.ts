@@ -19,17 +19,12 @@ export interface PostClipsUploadUrlResponse {
   readonly storagePath: string;
 }
 
-export interface PostClipsCreatedResponse {
+export interface PostClipsResponse {
   readonly clipId: string;
   readonly promptId: string;
-  readonly status: 'uploaded';
+  readonly storagePath: string;
+  readonly replaced: boolean;
 }
-
-export interface PostClipsUpsertedResponse extends PostClipsCreatedResponse {
-  readonly replaced: true;
-}
-
-export type PostClipsResponse = PostClipsCreatedResponse | PostClipsUpsertedResponse;
 
 export interface SlotSummary {
   readonly promptId: string;

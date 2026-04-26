@@ -11,7 +11,8 @@
     "./vlog": "./src/vlog/index.ts",
     "./slot": "./src/slot/index.ts",
     "./time": "./src/time/index.ts",
-    "./shared": "./src/shared/index.ts"
+    "./shared": "./src/shared/index.ts",
+    "./api": "./src/api/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

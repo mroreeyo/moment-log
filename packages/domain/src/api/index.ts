@@ -19,8 +19,6 @@ export type {
   PostGroupsResponse,
   PostInviteAcceptResponse,
   PostClipsUploadUrlResponse,
-  PostClipsCreatedResponse,
-  PostClipsUpsertedResponse,
   PostClipsResponse,
   SlotSummary,
   GetGroupSlotsResponse,

@@ -17,7 +17,6 @@ export interface PostClipsUploadUrlRequest {
 
 export interface PostClipsRequest {
   readonly promptId: string;
-  readonly storagePath: string;
   readonly recordingStartedAt: string;
   readonly fileSizeBytes: number;
 }
